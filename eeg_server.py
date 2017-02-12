@@ -44,7 +44,7 @@ class eeg_socket(tornado.websocket.WebSocketHandler):
 
         # --- setting up config stuff --- #
 
-        curr_class = "hyped"
+        curr_class = "relaxed"
         caleb_url = "https://hackpoly-mu.herokuapp.com/classification"
         is_training = False
 
