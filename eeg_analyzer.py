@@ -23,7 +23,6 @@ class EEG_Analyzer(object):
         self.curr_heart_rates = []
 
         self.classifications = ['relaxed','focused','hyped']
-        self.trained_model = GaussianNB()
         self.array_size = 100
 
     def round_to(self,n, precision):
@@ -102,41 +101,41 @@ class EEG_Analyzer(object):
     def analyze_brainwaves(self,song_name):
 
 
-        #all_samples = []
-        #all_solutions = []
+        all_samples = []
+        all_solutions = []
 
         # ----- query for some datum ----- #
-        #for index, val in enumerate(self.classifications):
+        for index, val in enumerate(self.classifications):
 
             # ---- make request to Caleb ---- #
-            #response = requests.get("https://hackpoly-mu.herokuapp.com/classification/"+val)
+            response = requests.get("https://hackpoly-mu.herokuapp.com/classification/"+val)
 
-            #parsed = json.loads(response.text)
+            parsed = json.loads(response.text)
 
-            #alpha = parsed.get('alpha')
-            #beta  = parsed.get('beta')
-            #delta = parsed.get('delta')
-            #gamma = parsed.get('gamma')
-            #theta = parsed.get('theta')
+            alpha = parsed.get('alpha')
+            beta  = parsed.get('beta')
+            delta = parsed.get('delta')
+            gamma = parsed.get('gamma')
+            theta = parsed.get('theta')
 
             # heart_rate = [parsed.get('heart_rate')] * len(theta)
 
-            #samples = list(zip(alpha,beta,delta,gamma,theta))
+            samples = list(zip(alpha,beta,delta,gamma,theta))
             # [(...),(...)....]
 
-            #solutions = [index] * len(samples)
+            solutions = [index] * len(samples)
 
             #samples = [sample.append(heart_rate) for sample in samples]
 
             # ------- aggregate ------ #
-            #all_samples += samples
-            #all_solutions += solutions
+            all_samples += samples
+            all_solutions += solutions
 
         # ------- train the model ---- #
         # all_samples is fully stocked
         # all_solution is fully stocked
 
-        #gaussian_model = GaussianNB()
+        gaussian_model = GaussianNB()
 
         #print(train_data)
 
