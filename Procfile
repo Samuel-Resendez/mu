@@ -1,1 +1,1 @@
-web: python eeg_server.py
+web: gunicorn -k tornado --bind=0.0.0.0:$PORT eeg_server
