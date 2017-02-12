@@ -93,7 +93,6 @@ class eeg_socket(tornado.websocket.WebSocketHandler):
                 for lis in listeners:
                     lis.write_message(processed)
 
-
         elif 'theta_relative' in parsed_json:
             thetas = parsed_json.get('theta_relative')
             processed = analyzer.parse_input(thetas)
@@ -112,9 +111,6 @@ class eeg_socket(tornado.websocket.WebSocketHandler):
 
                 for lis in listeners:
                     lis.write_message(processed)
-
-
-
 
         # --- FOR TRAINING ONLY --- #
         if is_training and len(analyzer.curr_thetas) >= 100 and len(analyzer.curr_betas) >= 100 and len(analyzer.curr_alphas) >= 100 and len(analyzer.curr_deltas) >= 100 and len(analyzer.curr_gammas) >= 100 and len(analyzer.curr_heart_rates):
@@ -147,8 +143,9 @@ class music_handler(tornado.websocket.WebSocketHandler):
 
     def on_message(self,message):
         print(message)
-        parse = json.loads(message)
-        analyzer.analyze_brainwaves(parse['track_id'])
+        #parse = json.loads(message)
+        #analyzer.analyze_brainwaves(parse['track_id'])
+        analyzer.analyze_brainwaves("1234")
 
         for cl in processed_clients:
             cl.write_message(analyzer.processed_data)
