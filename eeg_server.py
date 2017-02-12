@@ -165,11 +165,12 @@ class music_handler(tornado.websocket.WebSocketHandler):
         return True
 
     def on_message(self,message):
-        print(message)
+
+
         parse = json.loads(message)
         analyzer.analyze_brainwaves(parse['track_id'])
         #analyzer.analyze_brainwaves("1234")
-
+        print("sending data to web_app")
         for cl in processed_clients:
             cl.write_message(analyzer.processed_data)
 
@@ -221,11 +222,11 @@ app = tornado.web.Application([
 
 
 if __name__ == "__main__":
-    
+
     parse_command_line()
     app.listen(options.port)
     analyzer.train_model()
 
-    #tornado.ioloop.PeriodicCallback(hi, 2000).start()
+    tornado.ioloop.PeriodicCallback(hi, 2000).start()
 
     tornado.ioloop.IOLoop.instance().start()
