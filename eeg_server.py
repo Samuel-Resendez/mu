@@ -9,10 +9,10 @@ import tornado.options
 import json, requests
 from eeg_analyzer import EEG_Analyzer
 
-from tornado.options import options
+from tornado.options import define, options, parse_command_line
 
 
-
+define("port", default=5000, help="run on the given port", type=int)
 
 muse_sockets = []
 database_sockets = []
@@ -141,7 +141,7 @@ app = tornado.web.Application([
 
 
 if __name__ == "__main__":
-    tornado.options.parse_command_line()
+    parse_command_line()
     app.listen(options.port)
     print("Server has started on port: 8000")
     tornado.ioloop.IOLoop.instance().start()
