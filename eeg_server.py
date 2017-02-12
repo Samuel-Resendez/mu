@@ -62,11 +62,17 @@ class eeg_socket(tornado.websocket.WebSocketHandler):
             if processed > 0:
                 analyzer.curr_deltas.append(processed)
 
+                for lis in listeners:
+                    lis.write_message(processed)
+
         elif 'alpha_relative' in parsed_json:
             alphas = parsed_json.get('alpha_relative')
             processed = analyzer.parse_input(alphas)
             if processed > 0:
                 analyzer.curr_alphas.append(processed)
+
+                for lis in listeners:
+                    lis.write_message(processed)
 
         elif 'gamma_relative' in parsed_json:
             gammas = parsed_json.get('gamma_relative')
@@ -74,11 +80,17 @@ class eeg_socket(tornado.websocket.WebSocketHandler):
             if processed > 0:
                 analyzer.curr_gammas.append(processed)
 
+                for lis in listeners:
+                    lis.write_message(processed)
+
         elif 'beta_relative' in parsed_json:
             betas = parsed_json.get('beta_relative')
             processed = analyzer.parse_input(betas)
             if processed > 0:
                 analyzer.curr_betas.append(processed)
+
+                for lis in listeners:
+                    lis.write_message(processed)
 
 
         elif 'theta_relative' in parsed_json:
@@ -87,6 +99,9 @@ class eeg_socket(tornado.websocket.WebSocketHandler):
             if processed != 0:
                 analyzer.curr_thetas.append(processed)
 
+                for lis in listeners:
+                    lis.write_message(processed)
+
         elif 'heart_rate' in parsed_json:
             rate = parsed_json.get('heart_rate')
             processed = analyzer.parse_input(rate)
@@ -94,8 +109,10 @@ class eeg_socket(tornado.websocket.WebSocketHandler):
             if processed != 0:
                 analyzer.curr_heart_rates.append(processed)
 
-        for lis in listeners:
-            lis.write_message("Sending data")
+                for lis in listeners:
+                    lis.write_message(processed)
+
+
 
 
         # --- FOR TRAINING ONLY --- #
@@ -145,6 +162,14 @@ class eeg_data_socket(tornado.websocket.WebSocketHandler):
         if self in listeners:
             listeners.remove(self)
 
+def hi():
+    for cl in muse_sockets:
+        cl.write_message('hi')
+    for cl in database_sockets:
+        cl.write_message('hi')
+    for cl in listeners:
+        cl.write_message('hi')
+
 # ------- execution begins ------- #
 
 app = tornado.web.Application([
@@ -158,5 +183,7 @@ app = tornado.web.Application([
 if __name__ == "__main__":
     parse_command_line()
     app.listen(options.port)
-    print("Server has started on port: 8000")
+
+    tornado.ioloop.PeriodicCallback(hi, 2000).start()
+
     tornado.ioloop.IOLoop.instance().start()
