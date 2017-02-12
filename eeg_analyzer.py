@@ -63,7 +63,7 @@ class EEG_Analyzer(object):
             all_samples += samples
             all_solutions += solutions
 
-            self.trained_model.fit(all_samples,all_solutions)
+            self.trained_model = self.train_model.fit(all_samples,all_solutions)
 
     def shorten_array(self, arr_to_shorten):
 
