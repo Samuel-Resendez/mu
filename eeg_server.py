@@ -13,15 +13,13 @@ muse_sockets = []
 database_sockets = []
 
 
-current_song = ""
 
-# ---- stores aggregate data ------- #
-curr_thetas = []
-curr_betas = []
-curr_alphas = []
-curr_gammas = []
-curr_deltas = []
-# ---- tbh, this is boutta be hella scary ----- #
+# I got this #
+
+# FIGHT ON #
+
+# --- machine learning / data interface --- #
+analyzer = EEG_Analyzer()
 
 
 class eeg_socket(tornado.websocket.WebSocketHandler):
@@ -31,7 +29,7 @@ class eeg_socket(tornado.websocket.WebSocketHandler):
 
 
     def open(self):
-        print(current_song)
+        print("Server is Open")
         if self not in muse_sockets:
             muse_sockets.append(self)
 
@@ -42,82 +40,91 @@ class eeg_socket(tornado.websocket.WebSocketHandler):
     def on_message(self,message):
         # --- handle logic to parse message ------ #
         parsed_json = json.loads(message)
+        #print(parsed_json)
+
+        # --- setting up config stuff --- #
+
+        curr_class = "hyped"
+        caleb_url = "https://hackpoly-mu.herokuapp.com/classification"
+        is_training = False
+
+        # -^- Only use while training -^- #
 
         if 'delta_relative' in parsed_json:
             deltas = parsed_json.get('delta_relative')
-            curr_deltas.append(EEG_Analyzer().parse_input(deltas))
-            print(deltas)
+            processed = analyzer.parse_input(deltas)
+            if processed > 0:
+                analyzer.curr_deltas.append(processed)
 
         elif 'alpha_relative' in parsed_json:
             alphas = parsed_json.get('alpha_relative')
-            curr_alphas.append(EEG_Analyzer().parse_input(alphas))
-            print(alphas)
+            processed = analyzer.parse_input(alphas)
+            if processed > 0:
+                analyzer.curr_alphas.append(processed)
 
         elif 'gamma_relative' in parsed_json:
             gammas = parsed_json.get('gamma_relative')
-            curr_gammas.append(EEG_Analyzer().parse_input(gammas))
-            print(gammas)
+            processed = analyzer.parse_input(gammas)
+            if processed > 0:
+                analyzer.curr_gammas.append(processed)
 
         elif 'beta_relative' in parsed_json:
             betas = parsed_json.get('beta_relative')
-            curr_betas.append(EEG_Analyzer().parse_input(betas))
-            print(betas)
+            processed = analyzer.parse_input(betas)
+            if processed > 0:
+                analyzer.curr_betas.append(processed)
+
 
         elif 'theta_relative' in parsed_json:
             thetas = parsed_json.get('theta_relative')
-            curr_thetas.append(EEG_Analyzer().parse_input(thetas))
-            print(thetas)
+            processed = analyzer.parse_input(thetas)
+            if processed != 0:
+                analyzer.curr_thetas.append(processed)
+
+        elif 'heart_rate' in parsed_json:
+            rate = parsed_json.get('heart_rate')
+            processed = analyzer.parse_input(rate)
+
+            if processed != 0:
+                analyzer.curr_heart_rates.append(processed)
+
+            analyzer.curr_heart_rates.append(rate[0])
 
 
+        # --- FOR TRAINING ONLY --- #
+        if is_training and len(analyzer.curr_thetas) >= 100 and len(analyzer.curr_betas) >= 100 and len(analyzer.curr_alphas) >= 100 and len(analyzer.curr_deltas) >= 100 and len(analyzer.curr_gammas) >= 100 and len(analyzer.curr_heart_rates):
+            # --- send first 100 to Caleb --- #
+            avg_heart_rate = 0
+            if len(analyzer.curr_heart_rates) == 0:
+                avg_heart_rate = 90
+            else:
+                avg_heart_rate = sum(analyzer.curr_heart_rates) / len(analyzer.curr_heart_rates)
+            packet = {
+                'class': curr_class,
+                'heart_rate': analyzer.curr_heart_rates[:100],
+                'alpha': analyzer.curr_alphas[:100],
+                'beta': analyzer.curr_betas[:100],
+                'delta':analyzer.curr_deltas[:100],
+                'gamma':analyzer.curr_gammas[:100],
+                'theta':analyzer.curr_thetas[:100],
+            }
+            requests.post(caleb_url, json = packet)
+            print("Sent data to caleb")
 
+            analyzer.curr_thetas = []; analyzer.curr_betas = []; analyzer.curr_alphas = []; analyzer.curr_deltas = []; analyzer.curr_gammas = []
+            analyzer.curr_heart_rates = []
+
+class music_handler(tornado.websocket.WebSocketHandler):
+
+
+    def check_origin(self,origin):
+        return True
+
+    def on_message(self,message):
         print(message)
-
-
-        # --- send to Caleb --- #
-        for connection in muse_sockets:
-            connection.write_message(message)
-
-
-
-class music_handler(tornado.web.RequestHandler):
-
-    def post(self):
-        song_name = self.get_argument('song_name',"No data")
-        if song_name != "No data":
-            print(song_name)
-            classification = EEG_Analyzer().analyze_brainwaves(curr_alphas,curr_betas,curr_deltas,curr_gammas,curr_thetas)
-
-            # -- send classification and song name to Caleb -- #
-            requests.post("https://hackpoly-mu.herokuapp.com/",data={'song_name':song_name,'classification':classification})
-
-
-
-    def get(self):
-        self.write("""
-        <h1> Song endpoint </h1>
-        <p> Make a POST request with the following param format:
-        { 'song_name': the song name }
-        </p>
-        """)
-
-
-class database_handler(tornado.websocket.WebSocketHandler):
-
-    def open(self):
-        print("connection established with database")
-
-        if self not in database_sockets:
-            database_sockets.append(self)
-
-
-    def on_close(self):
-        if self in database_sockets:
-            database_sockets.remove(self)
-
-
-
-
-
+        #parse = json.loads(message)
+        #analyzer.analyze_brainwaves(parse['track_id'])
+        analyzer.analyze_brainwaves("1234")
 
 # ------- execution begins ------- #
 
