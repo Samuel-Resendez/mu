@@ -225,7 +225,6 @@ if __name__ == "__main__":
 
     parse_command_line()
     app.listen(options.port)
-    analyzer.train_model()
 
     tornado.ioloop.PeriodicCallback(hi, 2000).start()
 
