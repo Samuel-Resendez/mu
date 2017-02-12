@@ -183,6 +183,8 @@ def hi():
         cl.write_message('hi')
     for cl in listeners:
         cl.write_message('hi')
+    for cl in processed_clients:
+        cl.write_message('hi')
 
 # ------- execution begins ------- #
 
