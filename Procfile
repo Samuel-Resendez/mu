@@ -1,1 +1,1 @@
-web: gunicorn -w 4 -b "0.0.0.0:$PORT" eeg_server:app
+web: python eeg_server.py --port=8000
