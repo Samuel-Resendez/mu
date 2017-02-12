@@ -1,1 +1,1 @@
-web: gunicorn -bind=127.0.0.1:8000 eeg_server:app
+web: gunicorn -w 4 -b "0.0.0.0:$PORT" eeg_server:app
