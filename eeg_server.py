@@ -75,6 +75,10 @@ class eeg_socket(tornado.websocket.WebSocketHandler):
             if processed > 0:
                 analyzer.curr_alphas.append(processed)
 
+                obj = {
+                'val':processed,
+                }
+
                 for lis in listeners:
                     lis.write_message(obj)
 
@@ -124,8 +128,12 @@ class eeg_socket(tornado.websocket.WebSocketHandler):
             if processed != 0:
                 analyzer.curr_heart_rates.append(processed)
 
+                obj = {
+                'val':processed,
+                }
+
                 for lis in listeners:
-                    lis.write_message(str(processed))
+                    lis.write_message(obj)
 
         # --- FOR TRAINING ONLY --- #
         if is_training and len(analyzer.curr_thetas) >= 100 and len(analyzer.curr_betas) >= 100 and len(analyzer.curr_alphas) >= 100 and len(analyzer.curr_deltas) >= 100 and len(analyzer.curr_gammas) >= 100 and len(analyzer.curr_heart_rates):
