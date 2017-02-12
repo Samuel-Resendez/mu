@@ -16,6 +16,7 @@ define("port", default=5000, help="run on the given port", type=int)
 
 muse_sockets = []
 database_sockets = []
+listeners = []
 
 
 
@@ -93,7 +94,8 @@ class eeg_socket(tornado.websocket.WebSocketHandler):
             if processed != 0:
                 analyzer.curr_heart_rates.append(processed)
 
-            analyzer.curr_heart_rates.append(rate[0])
+        for lis in listeners:
+            lis.write_message("Sending data")
 
 
         # --- FOR TRAINING ONLY --- #
@@ -129,7 +131,19 @@ class music_handler(tornado.websocket.WebSocketHandler):
         print(message)
         parse = json.loads(message)
         analyzer.analyze_brainwaves(parse['track_id'])
-        
+
+class eeg_data_socket(tornado.websocket.WebSocketHandler):
+
+    def check_origin(self,origin):
+        return True
+
+    def open(self):
+        if self not in listeners:
+            listeners.append(self)
+
+    def on_close(self):
+        if self in listeners:
+            listeners.remove(self)
 
 # ------- execution begins ------- #
 
