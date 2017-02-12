@@ -150,6 +150,7 @@ class eeg_data_socket(tornado.websocket.WebSocketHandler):
 app = tornado.web.Application([
     (r'/muse_socket',eeg_socket),
     (r'/song_name',music_handler),
+    (r'/logging',eeg_data_socket),
 ])
 
 
