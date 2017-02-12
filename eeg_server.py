@@ -175,7 +175,7 @@ def hi():
 app = tornado.web.Application([
     (r'/muse_socket',eeg_socket),
     (r'/song_name',music_handler),
-    (r'/logging',eeg_data_socket),
+    (r'/raw_data',eeg_data_socket),
 ])
 
 
