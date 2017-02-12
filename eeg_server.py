@@ -63,8 +63,11 @@ class eeg_socket(tornado.websocket.WebSocketHandler):
             if processed > 0:
                 analyzer.curr_deltas.append(processed)
 
+                obj = {
+                'val':processed,
+                }
                 for lis in listeners:
-                    lis.write_message(str(processed))
+                    lis.write_message(obj)
 
         elif 'alpha_relative' in parsed_json:
             alphas = parsed_json.get('alpha_relative')
@@ -73,7 +76,7 @@ class eeg_socket(tornado.websocket.WebSocketHandler):
                 analyzer.curr_alphas.append(processed)
 
                 for lis in listeners:
-                    lis.write_message(str(processed))
+                    lis.write_message(obj)
 
         elif 'gamma_relative' in parsed_json:
             gammas = parsed_json.get('gamma_relative')
@@ -81,8 +84,12 @@ class eeg_socket(tornado.websocket.WebSocketHandler):
             if processed > 0:
                 analyzer.curr_gammas.append(processed)
 
+                obj = {
+                'val':processed,
+                }
+
                 for lis in listeners:
-                    lis.write_message(str(processed))
+                    lis.write_message(obj)
 
         elif 'beta_relative' in parsed_json:
             betas = parsed_json.get('beta_relative')
@@ -90,8 +97,12 @@ class eeg_socket(tornado.websocket.WebSocketHandler):
             if processed > 0:
                 analyzer.curr_betas.append(processed)
 
+                obj = {
+                'val':processed,
+                }
+
                 for lis in listeners:
-                    lis.write_message(str(processed))
+                    lis.write_message(obj)
 
         elif 'theta_relative' in parsed_json:
             thetas = parsed_json.get('theta_relative')
@@ -99,8 +110,12 @@ class eeg_socket(tornado.websocket.WebSocketHandler):
             if processed != 0:
                 analyzer.curr_thetas.append(processed)
 
+                obj = {
+                'val':processed,
+                }
+
                 for lis in listeners:
-                    lis.write_message(str(processed))
+                    lis.write_message(obj)
 
         elif 'heart_rate' in parsed_json:
             rate = parsed_json.get('heart_rate')
@@ -110,7 +125,7 @@ class eeg_socket(tornado.websocket.WebSocketHandler):
                 analyzer.curr_heart_rates.append(processed)
 
                 for lis in listeners:
-                    lis.write_message(processed)
+                    lis.write_message(str(processed))
 
         # --- FOR TRAINING ONLY --- #
         if is_training and len(analyzer.curr_thetas) >= 100 and len(analyzer.curr_betas) >= 100 and len(analyzer.curr_alphas) >= 100 and len(analyzer.curr_deltas) >= 100 and len(analyzer.curr_gammas) >= 100 and len(analyzer.curr_heart_rates):
