@@ -64,7 +64,7 @@ class eeg_socket(tornado.websocket.WebSocketHandler):
                 analyzer.curr_deltas.append(processed)
 
                 obj = {
-                'val':processed,
+                'delta':processed,
                 }
                 for lis in listeners:
                     lis.write_message(obj)
@@ -76,7 +76,7 @@ class eeg_socket(tornado.websocket.WebSocketHandler):
                 analyzer.curr_alphas.append(processed)
 
                 obj = {
-                'val':processed,
+                'alpha':processed,
                 }
 
                 for lis in listeners:
@@ -89,7 +89,7 @@ class eeg_socket(tornado.websocket.WebSocketHandler):
                 analyzer.curr_gammas.append(processed)
 
                 obj = {
-                'val':processed,
+                'gamma':processed,
                 }
 
                 for lis in listeners:
@@ -102,7 +102,7 @@ class eeg_socket(tornado.websocket.WebSocketHandler):
                 analyzer.curr_betas.append(processed)
 
                 obj = {
-                'val':processed,
+                'beta':processed,
                 }
 
                 for lis in listeners:
@@ -115,7 +115,7 @@ class eeg_socket(tornado.websocket.WebSocketHandler):
                 analyzer.curr_thetas.append(processed)
 
                 obj = {
-                'val':processed,
+                'theta':processed,
                 }
 
                 for lis in listeners:
@@ -129,7 +129,7 @@ class eeg_socket(tornado.websocket.WebSocketHandler):
                 analyzer.curr_heart_rates.append(processed)
 
                 obj = {
-                'val':processed,
+                'heart_rate':processed,
                 }
 
                 for lis in listeners:
