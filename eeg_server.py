@@ -129,7 +129,7 @@ class music_handler(tornado.websocket.WebSocketHandler):
         print(message)
         parse = json.loads(message)
         analyzer.analyze_brainwaves(parse['track_id'])
-        analyzer.analyze_brainwaves("1234")
+        
 
 # ------- execution begins ------- #
 
