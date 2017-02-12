@@ -18,6 +18,8 @@ class EEG_Analyzer(object):
         self.curr_gammas = []
         self.curr_deltas = []
 
+        self.processed_data = dict()
+
         self.curr_heart_rates = []
 
         self.classifications = ['relaxed','focused','hyped']
@@ -137,8 +139,9 @@ class EEG_Analyzer(object):
             'song-id': song_name,
             'song-rating': score,
         }
-
         requests.post(url,json=data)
+
+        self.processed_data = data
 
 
 

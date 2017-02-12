@@ -17,6 +17,7 @@ define("port", default=5000, help="run on the given port", type=int)
 muse_sockets = []
 database_sockets = []
 listeners = []
+processed_clients = []
 
 
 
@@ -149,6 +150,9 @@ class music_handler(tornado.websocket.WebSocketHandler):
         parse = json.loads(message)
         analyzer.analyze_brainwaves(parse['track_id'])
 
+        for cl in processed_clients:
+            cl.write_message(analyzer.processed_data)
+
 class eeg_data_socket(tornado.websocket.WebSocketHandler):
 
     def check_origin(self,origin):
@@ -161,6 +165,19 @@ class eeg_data_socket(tornado.websocket.WebSocketHandler):
     def on_close(self):
         if self in listeners:
             listeners.remove(self)
+
+class processed_eeg_data_socket(tornado.websocket.WebSocketHandler):
+
+    def check_origin(self,origin):
+        return True
+
+    def open(self):
+        if self not in processed_clients:
+            processed_clients.append(self)
+
+    def on_close(self):
+        if self in processed_clients:
+            processed_clients.remove(self)
 
 def hi():
     for cl in muse_sockets:
@@ -176,6 +193,7 @@ app = tornado.web.Application([
     (r'/muse_socket',eeg_socket),
     (r'/song_name',music_handler),
     (r'/raw_data',eeg_data_socket),
+    (r'/parsed_data',processed_eeg_data_socket)
 ])
 
 
