@@ -95,7 +95,6 @@ class EEG_Analyzer(object):
 
         rounded_val = self.round_to(val,0.05)
 
-        print(round(rounded_val,2))
         return round(rounded_val,2)
 
     def analyze_brainwaves(self,song_name):
@@ -152,7 +151,7 @@ class EEG_Analyzer(object):
         # [(...),(...)]
         #test_samples = [samp.append(self.curr_heart_rates[i]) for i, samp in enumerate(self.curr_heart_rates)]
 
-        predictions = self.train_model.predict(test_samples)
+        predictions = gaussian_model.fit(all_samples,all_solutions).predict(test_samples)
 
         print("Predictions: ",end="")
         print(predictions[:50])
